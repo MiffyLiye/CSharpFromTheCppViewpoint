@@ -33,32 +33,34 @@ namespace CSharpTest
         [Fact]
         public void capture_by_reference_surprise()
         {
-            var j = -1;
+            var months = new[] {"May", "June"};
+            var n = "";
             Task task = null;
 
             for (var i = 0; i < 1; i++)
             {
-                task = Task.Run(() => { j = i; });
+                task = Task.Run(() => { n = months[i]; });
             }
             task?.Wait();
 
-            Check.True(j == 1);
+            Check.True(n == "June");
         }
 
         [Fact]
         public void capture_by_value()
         {
-            var j = -1;
+            var months = new[] {"May", "June"};
+            var n = "";
             Task task = null;
 
             for (var i = 0; i < 1; i++)
             {
                 var t = i;
-                task = Task.Run(() => { j = t; });
+                task = Task.Run(() => { n = months[t]; });
             }
             task?.Wait();
 
-            Assert.True(j == 0);
+            Assert.True(n == "May");
         }
 
         [Fact]
