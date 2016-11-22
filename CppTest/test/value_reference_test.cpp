@@ -17,16 +17,16 @@ public:
     int x;
     int y;
 
-    Point(int x, int y)
+    Point(int xx, int yy)
     {
-        this->x = x;
-        this->y = y;
+        this->x = xx;
+        this->y = yy;
     }
 
-    void change(int x, int y) override
+    void change(int xx, int yy) override
     {
-        this->x = x;
-        this->y = y;
+        this->x = xx;
+        this->y = yy;
     }
 };
 
@@ -65,8 +65,8 @@ TEST_CASE("create on stack", "[value reference]")
 {
     auto i = 0;
     auto p = Point{0, 0};
-    auto upi = reinterpret_cast<uintptr_t>(&i);
-    auto upa = reinterpret_cast<uintptr_t>(&p);
+    auto upi = static_cast<long>(reinterpret_cast<uintptr_t>(&i));
+    auto upa = static_cast<long>(reinterpret_cast<uintptr_t>(&p));
 
     CHECK(abs(upi - upa) < 32);
 }
@@ -75,8 +75,8 @@ TEST_CASE("create on heap", "[value reference]")
 {
     auto i = 0;
     auto pp = new Point{0, 0};
-    auto upi = reinterpret_cast<uintptr_t>(&i);
-    auto upa = reinterpret_cast<uintptr_t>(pp);
+    auto upi = static_cast<long>(reinterpret_cast<uintptr_t>(&i));
+    auto upa = static_cast<long>(reinterpret_cast<uintptr_t>(pp));
 
     CHECK(abs(upi - upa) > 32 * 1024);
 }

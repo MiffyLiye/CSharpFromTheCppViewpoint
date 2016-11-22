@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Threading.Tasks;
+using System.Collections.Generic;
 using Xunit;
 
 namespace CSharpTest
@@ -24,9 +24,12 @@ namespace CSharpTest
             var n = "";
             Action act = () => { n = m; };
 
-            m = "June";
             act();
+            Assert.True(n == "May");
 
+            m = "June";
+
+            act();
             Assert.True(n == "June");
         }
 
@@ -35,13 +38,13 @@ namespace CSharpTest
         {
             var months = new[] {"May", "June"};
             var n = "";
-            Task task = null;
+            var acts = new List<Action>();
 
             for (var i = 0; i < 1; i++)
             {
-                task = Task.Run(() => { n = months[i]; });
+                acts.Add(() => { n = months[i]; });
             }
-            task?.Wait();
+            acts[0]();
 
             Check.True(n == "June");
         }
@@ -51,14 +54,14 @@ namespace CSharpTest
         {
             var months = new[] {"May", "June"};
             var n = "";
-            Task task = null;
+            var acts = new List<Action>();
 
             for (var i = 0; i < 1; i++)
             {
                 var t = i;
-                task = Task.Run(() => { n = months[t]; });
+                acts.Add(() => { n = months[t]; });
             }
-            task?.Wait();
+            acts[0]();
 
             Assert.True(n == "May");
         }
@@ -68,14 +71,13 @@ namespace CSharpTest
         {
             var months = new[] {"May", "June"};
             var n = "";
-            Task task = null;
+            var acts = new List<Action>();
 
             foreach (var month in months)
             {
-                task = task ?? Task.Run(() => { n = month; });
+                acts.Add(() => { n = month; });
             }
-
-            task?.Wait();
+            acts[0]();
 
             Check.True(n == "May");
         }
