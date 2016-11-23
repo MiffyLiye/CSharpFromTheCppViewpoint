@@ -5,6 +5,8 @@ namespace CSharpTest
 {
     public interface IPoint
     {
+        int X { get; }
+        int Y { get; }
         void Change(int x, int y);
     }
 
@@ -31,6 +33,17 @@ namespace CSharpTest
             p.X = 1;
 
             Assert.True(q.X == 0);
+        }
+
+        [Fact]
+        public void pass_parameter_by_value()
+        {
+            var p = new VPoint {X = 0, Y = 0};
+            Action<VPoint> act = (v) => { v.X = 1; };
+
+            act(p);
+
+            Assert.True(p.X == 0);
         }
 
         [Fact]

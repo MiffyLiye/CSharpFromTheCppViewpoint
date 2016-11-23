@@ -1,4 +1,5 @@
-﻿using Xunit;
+﻿using System;
+using Xunit;
 
 namespace CSharpTest
 {
@@ -35,6 +36,28 @@ namespace CSharpTest
             ((IPoint) p).Change(1, 1);
 
             Assert.True(p.X == 1);
+        }
+
+        [Fact]
+        public void pass_parameter_by_value()
+        {
+            var p = new RPoint {X = 0, Y = 0};
+            Action<RPoint> act = (v) => { v.X = 1; };
+
+            act(p);
+
+            Assert.True(p.X == 1);
+        }
+
+        [Fact]
+        public void pass_readonly_parameter_by_value()
+        {
+            var p = new RPoint {X = 0, Y = 0};
+
+//            The property IPoint.X has no setter
+//            Action<IPoint> act = (v) => { v.X = 1; };
+
+//            act(p);
         }
     }
 }

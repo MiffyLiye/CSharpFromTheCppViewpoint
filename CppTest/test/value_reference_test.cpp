@@ -51,6 +51,15 @@ TEST_CASE("copy by reference", "[value reference]")
     REQUIRE(q.x == 1);
 }
 
+TEST_CASE("pass parameter by const reference", "[value reference]")
+{
+    auto p = Point{0, 0};
+//    auto act = [](const auto& r) { r.x  = 1; };
+
+//    error: assignment of member 'Point::x' in read-only object
+//    act(p);
+}
+
 TEST_CASE("change by 'interface'", "[value reference]")
 {
     auto pp = new Point{0, 0};
