@@ -2,6 +2,7 @@
 #include "finally.hpp"
 
 using namespace std;
+using namespace tcpppl;
 
 class IPoint
 {
@@ -66,9 +67,9 @@ TEST_CASE("create on stack", "[value reference]")
     auto i = 0;
     auto p = Point{0, 0};
     auto upi = static_cast<long>(reinterpret_cast<uintptr_t>(&i));
-    auto upa = static_cast<long>(reinterpret_cast<uintptr_t>(&p));
+    auto upp = static_cast<long>(reinterpret_cast<uintptr_t>(&p));
 
-    CHECK(abs(upi - upa) < 32);
+    CHECK(abs(upi - upp) < 32);
 }
 
 TEST_CASE("create on heap", "[value reference]")
@@ -76,7 +77,7 @@ TEST_CASE("create on heap", "[value reference]")
     auto i = 0;
     auto pp = new Point{0, 0};
     auto upi = static_cast<long>(reinterpret_cast<uintptr_t>(&i));
-    auto upa = static_cast<long>(reinterpret_cast<uintptr_t>(pp));
+    auto upp = static_cast<long>(reinterpret_cast<uintptr_t>(pp));
 
-    CHECK(abs(upi - upa) > 32 * 1024);
+    CHECK(abs(upi - upp) > 32 * 1024);
 }
