@@ -29,7 +29,7 @@ C#里的Lambda表达式基本上就是```(parameters) => expression-or-statement
 与上面C#代码等效的C++（C++14标准）代码如下：
 ```cpp
 auto greetings = "Hello";
-auto greet = [&](auto name) { cout << greetings << " " << name << "!"; };
+auto greet = [&](auto name) { cout << greetings << " " << name << "!" << endl; };
 greet("World");
 ```
 相比于C#的版本，C++版Lambda多了个```[...]```。它表示要捕获的外部变量列表。```[&]```表示所有变量按引用捕获，这种情况下，如果在Lambda内部给捕获变量重新赋值，闭包运行之后，外部变量的值也会跟着改变：
