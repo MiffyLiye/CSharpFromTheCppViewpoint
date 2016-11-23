@@ -79,17 +79,17 @@ REQUIRE(n == string{"May"});
 ```
 ```[m, &n]```表示```m```按值捕获，```n```按引用捕获。
 
-C++的高度灵活可以用C++之父的一段话总结：
->Many C++ design decisions have their roots in my dislike for forcing people to do things in some particular way.
->In history, some of the worst disasters have been caused by idealists trying to force people into "doing what is good for them".
->Such idealism not only leads to suffering among its innocent victims, but also to delusion and corruption of the idealists applying the force.
->I also find idealists prone to ignore experience and experiment that inconventiently clashes with dogma or theory.
->Where ideals clash and sometimes even when pundits seem to agree, I prefer to provide support that gives the programmer a choice.
+C++的高度灵活可以从C++之父的一段话中找到起源：
+>许多C++的设计决策根植于我对强迫他人以某些特定方式做事的厌恶。
+>历史上，一些最糟的灾难起源于理想主义者试图强迫别人去做“对他们好的事”。
+>这种理想主义不仅导致无辜的人遭受煎熬，并且会让采取这些措施的理想主义者产生幻觉和腐败。
+>我还发现理想主义者容易忽略那些让教条或理论难堪的经验或实验。
+>当理念崩塌，有时甚至专家也认可时，我更愿意为程序员提供选择的空间。
 >
->I'm not willing to sacrifice people to ideas.
->In particular, I do not try to enforce a single style of design through a narrowly defined programming language.
->People's ways of thinking and working are so diverse that an attempt to force a single style would do more harm than good.
->Thus, C++ is deliberately designed to support a variety of styles rather than a would-be "one true way".
+>……
+>
+>人们思考和工作的方式如此多样，试图强行推行单一的风格所带来的伤害会大于收益。
+>因此，C++刻意设计成了支持多种风格，而不是只有一种（可能的）“最好的方式”。
 >
 > —— Bjarne Stroustrup, 1994, *The Design and Evolution of C++*
 
@@ -128,4 +128,98 @@ Assert.True(n == "June");
 看上去没什么毛病，但和循环变量结合在一起……就爆出了微软不惜破坏向后兼容也要改掉的语义。
 
 ## 捕获循环变量
+如果在```for```循环中定义闭包捕获循环变量，那么每次捕获到的变量会是同一个吗？
+* A. 是同一个
+* B. 不是同一个
+* C. 都有可能
 
+运行下面的程序就知道答案了：
+```csharp
+var months = new[] {"May", "June"};
+var n = "";
+var acts = new List<Action>();
+
+for (var i = 0; i < 1; i++)
+{
+    acts.Add(() => { n = months[i]; });
+}
+acts[0]();
+
+Check.True(n == "June");
+```
+答案是**A**。INTERESTING!
+
+如果不想捕获同一个循环变量，<del>可以用C++!</del>可以在循环体中把变量复制一份再传给闭包：
+```csharp
+for (var i = 0; i < 1; i++)
+{
+    var t = i;
+    acts.Add(() => { n = months[t]; });
+}
+```
+
+那```foreach```循环呢？
+```csharp
+var months = new[] {"May", "June"};
+var n = "";
+var acts = new List<Action>();
+
+foreach (var month in months)
+{
+    acts.Add(() => { n = month; });
+}
+acts[0]();
+
+Check.True(n == "June");
+```
+在C# 5之前的版本，多次循环共用了同一个循环变量，所以……EXCITED!
+
+这就是微软当年不惜破坏向后兼容也要改掉的语义。
+
+到了C# 5，```foreach```循环内部就每次都会复制一个新的循环变量，上面的结果就成了
+```csharp
+Check.True(n == "May");
+```
+
+
+C++面对这个问题的解决方式就是按值捕获循环变量。
+但如果C++也按引用捕获循环变量会怎么样呢?
+* A. 结果和C#一样
+* B. 结果和C#不一样
+* C. 都有可能
+
+运行了下面的程序也不会知道知道正确答案是什么：
+```cpp
+auto months = vector<string>{"May", "June"};
+auto n = string{""};
+auto acts = vector<function<void()>>{};
+
+for (auto& m : months)
+{
+    acts.push_back([&] { n = m; });
+}
+acts[0]();
+
+UNDEFINED(n == string{"May"});
+```
+
+因为```m```的生命周期只在循环内部，捕获之后在循环外部运行属于未定义行为。
+所以正确答案是**C**。
+
+## 尾声
+微软发现了```foreach```的闭包捕获问题后，考虑过很多修复方案，当年还和C++界的领袖人物Herb Sutter打听过C++里类似问题的解决方案。
+但是最后为了兼容，没有对语法进行大改，也没有改```for```循环的语义，只把```foreach```的语义给改正了。
+
+反观C++，大多数新功能一开始都可以通过引用第三方库（如Boost）来使用，通过了实践考验的功能才能进入语言标准，例如```unique_ptr```,```shared_ptr```,和```weak_ptr```。
+那些进入了标准库却被实践证明不好用的功能，如```auto_ptr```，则会在大版本升级中逐步废弃（```auto_ptr```在C++11中被标记为deprecated，即不推荐使用，在C++17中被完全移除）。
+
+## 备注
+文中提到的代码可以到[CSharpFromTheCppViewpoint
+](https://github.com/MiffyLiye/CSharpFromTheCppViewpoint)下载。
+
+## 下期预告
+* 从C++的视角看C#（承） — 值类型与引用类型
+
+## 扩展阅读
+* [Closing over the loop variable considered harmful](https://blogs.msdn.microsoft.com/ericlippert/2009/11/12/closing-over-the-loop-variable-considered-harmful/)
+* [Closing over the loop variable considered harmful, part two](https://ericlippert.com/2009/11/16/closing-over-the-loop-variable-considered-harmful-part-two/)
