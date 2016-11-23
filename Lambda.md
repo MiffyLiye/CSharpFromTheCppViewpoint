@@ -26,7 +26,7 @@ greet("World");
 C#里的Lambda表达式基本上就是```(parameters) => expression-or-statement-block```这种形式，而C++中的Lambda表达式就比C#灵活不少。
 
 ## C++中的Lambda与闭包
-与上面C#代码等效的C++（C++14标准）代码如下：
+C++11引入了通过Lambda表达式定义匿名函数的特性，与上面C#代码等效的C++（C++14标准）代码如下：
 ```cpp
 auto greetings = "Hello";
 auto greet = [&](auto name) { cout << greetings << " " << name << "!" << endl; };
