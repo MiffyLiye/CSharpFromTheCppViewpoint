@@ -20,14 +20,14 @@ public:
 
     Point(int xx, int yy)
     {
-        this->x = xx;
-        this->y = yy;
+        x = xx;
+        y = yy;
     }
 
     void change(int xx, int yy) override
     {
-        this->x = xx;
-        this->y = yy;
+        x = xx;
+        y = yy;
     }
 };
 
