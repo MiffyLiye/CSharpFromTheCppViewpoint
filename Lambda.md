@@ -195,16 +195,16 @@ auto months = vector<string>{"May", "June"};
 auto n = string{""};
 auto acts = vector<function<void()>>{};
 
-for (auto& m : months)
+for (auto i = 0; i < 1; i++)
 {
-    acts.push_back([&] { n = m; });
+    acts.push_back([&] { n = months[i]; });
 }
 acts[0]();
 
 UNDEFINED(n == string{"May"});
 ```
 
-因为```m```的生命周期只在循环内部，捕获之后在循环外部运行属于未定义行为。
+因为```i```的生命周期只在循环内部，捕获之后在循环外部运行属于未定义行为。
 所以正确答案是**C**。
 
 ## 尾声

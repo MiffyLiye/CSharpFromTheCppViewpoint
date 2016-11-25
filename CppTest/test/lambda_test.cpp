@@ -73,7 +73,7 @@ TEST_CASE("capture for loop variable by reference to outer scope", "[lambda]")
 
     for (auto i = 0; i < 1; i++)
     {
-        acts.push_back([&, i] { n = months[i]; });
+        acts.push_back([&] { n = months[i]; });
     }
 //    acts[0]();
 
@@ -101,7 +101,7 @@ TEST_CASE("capture foreach loop variable by reference to outer scope", "[lambda]
     auto n = string{""};
     auto acts = vector<function<void()>>{};
 
-    for (auto& m : months)
+    for (auto m : months)
     {
         acts.push_back([&] { n = m; });
     }
