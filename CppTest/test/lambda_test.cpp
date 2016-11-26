@@ -56,7 +56,7 @@ TEST_CASE("capture for loop variable by value", "[lambda]")
     auto n = string{""};
     auto acts = vector<function<void()>>{};
 
-    for (auto i = 0; i < 1; i++)
+    for (size_t i = 0; i < 1; i++)
     {
         acts.push_back([&, i] { n = months[i]; });
     }
@@ -71,7 +71,7 @@ TEST_CASE("capture for loop variable by reference to outer scope", "[lambda]")
     auto n = string{""};
     auto acts = vector<function<void()>>{};
 
-    for (auto i = 0; i < 1; i++)
+    for (size_t i = 0; i < 1; i++)
     {
         acts.push_back([&] { n = months[i]; });
     }
