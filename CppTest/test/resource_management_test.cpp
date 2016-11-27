@@ -44,7 +44,7 @@ TEST_CASE("scope guard", "[resource management]")
     auto holder = Holder();
     {
         holder.count += 1;
-        auto act = finally([&]() { holder.count -= 1; });
+        auto on_scope_exit = finally([&]() { holder.count -= 1; });
         REQUIRE(holder.count == 1);
     }
     REQUIRE(holder.count == 0);

@@ -31,27 +31,29 @@ public:
     }
 };
 
-TEST_CASE("copy by value", "[value reference]")
+TEST_CASE("copy assignment", "[value reference]")
 {
     auto p = Point{0, 0};
-    auto q = p;
+    auto vq = p;
+    auto& rq = p;
 
     p.x = 1;
 
-    REQUIRE(q.x == 0);
+    REQUIRE(vq.x == 0);
+    REQUIRE(rq.x == 1);
 }
 
-TEST_CASE("copy by reference", "[value reference]")
+TEST_CASE("change by 'interface'", "[value reference]")
 {
     auto p = Point{0, 0};
-    auto& q = p;
+    IPoint* ip = &p;
 
-    p.x = 1;
+    ip->change(1, 1);
 
-    REQUIRE(q.x == 1);
+    REQUIRE(p.x == 1);
 }
 
-TEST_CASE("pass parameter by const reference", "[value reference]")
+TEST_CASE("pass read only parameter", "[value reference]")
 {
     auto p = Point{0, 0};
 //    auto act = [](const auto& r) { r.x  = 1; };
@@ -60,33 +62,17 @@ TEST_CASE("pass parameter by const reference", "[value reference]")
 //    act(p);
 }
 
-TEST_CASE("change by 'interface'", "[value reference]")
-{
-    auto pp = new Point{0, 0};
-    auto act = finally([&] { delete pp; });
-    IPoint* pq = pp;
-
-    pq->change(1, 1);
-
-    REQUIRE(pp->x == 1);
-}
-
-TEST_CASE("create on stack", "[value reference]")
+TEST_CASE("create on stack / heap", "[value reference]")
 {
     auto i = 0;
-    auto p = Point{0, 0};
-    auto upi = static_cast<long>(reinterpret_cast<uintptr_t>(&i));
-    auto upp = static_cast<long>(reinterpret_cast<uintptr_t>(&p));
+    auto vp = Point{0, 0};
+    auto rp = new Point{0, 0};
+    auto on_scope_exit = finally([&]() { delete rp; });
 
-    CHECK(abs(upi - upp) < 32);
-}
+    auto pi = static_cast<long>(reinterpret_cast<uintptr_t>(&i));
+    auto pvp = static_cast<long>(reinterpret_cast<uintptr_t>(&vp));
+    auto prp = static_cast<long>(reinterpret_cast<uintptr_t>(rp));
 
-TEST_CASE("create on heap", "[value reference]")
-{
-    auto i = 0;
-    auto pp = new Point{0, 0};
-    auto upi = static_cast<long>(reinterpret_cast<uintptr_t>(&i));
-    auto upp = static_cast<long>(reinterpret_cast<uintptr_t>(pp));
-
-    CHECK(abs(upi - upp) > 32 * 1024);
+    CHECK(abs(pi - pvp) < 32);
+    CHECK(abs(pi - prp) > 32 * 1024);
 }

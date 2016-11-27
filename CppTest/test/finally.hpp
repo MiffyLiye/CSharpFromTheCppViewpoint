@@ -3,13 +3,13 @@
 namespace tcpppl
 {
     template <typename F>
-    struct Final_action
+    struct FinalAction
     {
-        Final_action(F f) : clean{f}
+        FinalAction(F f) : clean{f}
         {
         }
 
-        ~Final_action()
+        ~FinalAction()
         {
             clean();
         }
@@ -18,8 +18,8 @@ namespace tcpppl
     };
 
     template <typename F>
-    Final_action<F> finally(F f)
+    FinalAction<F> finally(F f)
     {
-        return Final_action<F>(f);
+        return FinalAction<F>(f);
     }
 }
